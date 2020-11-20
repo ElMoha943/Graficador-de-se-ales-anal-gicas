@@ -19,19 +19,11 @@
 
 #define _XTAL_FREQ 4000000
 
-void main(){
-    unsigned char x=11, y, valor;
-    TRISBbits.TRISB7=0;
-    TRISBbits.TRISB6=0;
+void main(void) {
+    unsigned int valor,x=11,y;
+    TRISB=0x3F;
+    TRISA=0xFF;
     ANSEL=0;
-    
-    //Configura puerto AD
-    ANSELH=0;
-    ANSELHbits.ANS9=1; 
-    ADCON1bits.ADFM=1;
-    ADCON1bits.VCFG0=0; ADCON1bits.VCFG1=0;
-    ADCON0bits.ADON=1;
-    ADCON0bits.CHS0=1; ADCON0bits.CHS1=0; ADCON0bits.CHS2=0; ADCON0bits.CHS3=1;
     
     //Configura UART a 9600 baudios
     TXSTAbits.TXEN=1;
@@ -41,31 +33,37 @@ void main(){
     BAUDCTLbits.BRG16=0;
     SPBRG=25;
     SPBRGH=0;
-	
-	//DIBUJAR EJES
-	for(x=10; x<127; x++){
-		Pixel(x,94,1);
-	}
-	for(y=30; y<95; y++){
-		Pixel(10,y,1);
-	}
+
+    //Configura puerto AD
+    ANSELH=0;
+    ANSELHbits.ANS9=1; 
+    ADCON1bits.ADFM=1;
+    ADCON1bits.VCFG0=0; ADCON1bits.VCFG1=0;
+    ADCON0bits.ADON=1;
+    ADCON0bits.CHS0=1; ADCON0bits.CHS1=0; ADCON0bits.CHS2=0; ADCON0bits.CHS3=1;
     
-    //Borra display
+    //Limpiar Pantalla
     Clear();
     
+    //DIBUJAR EJES
+    for(x=10; x<127; x++){
+        Pixel(x,95,1);
+    }
+    for(y=30; y<96; y++){
+        Pixel(10,y,1);
+    }
     while(1){
-		ADCON0bits.GO=1;
-		while(ADCON0bits.GO==1){}
-		valor=(ADRESH<<8)+ADRESL;
-		__delay_ms(1);
-		valor=valor/16;
-		if(x==127)
-		{
-			x=11;
-		}
-		ClearLinea(x, 30, 1, 1);
-		Pixel(x,94-valor,1);
-		Pixel(x,94,1);
-		x++; 
+        ADCON0bits.GO=1;
+        while(ADCON0bits.GO==1)
+        valor=(ADRESH<<8)+ADRESL;
+        __delay_ms(1);
+        valor=valor/16;
+        if(x==127){
+            x=11;
+        }
+        ClearLinea(x, 30, 1, 1);
+        Pixel(x,94-valor,1);
+        Pixel(x,95,1);
+        x++;
     }
 }
